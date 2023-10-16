@@ -2,7 +2,7 @@
 A version of CSV-TAS for use with SMO-TAS-Exlaunch
 
 ## Writing CSV-TAS Scripts
-Read the tutorial [here](https://docs.google.com/document/d/1A7cFr9X9BsHDKlzq7se1q3oCZ7Wiiz2CoMkDuzxel3M/edit?usp=sharing).
+Read the tutorial [here](https://docs.google.com/document/d/1B9r_P7OCzNG1PMSnkzx5LIJ284yJmU5-dUaTpK8M5Z8/edit?usp=sharing).
 
 ## Generating Output File for TAS Mod
 Make sure you have Python 3 installed.

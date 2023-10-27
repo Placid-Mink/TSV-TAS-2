@@ -6,16 +6,13 @@ import sys
 import csv
 from dataclasses import dataclass, field
 
-RAD_TO_DEG = 180 / math.pi
-DEG_TO_RAD = math.pi / 180
-
 inpath = sys.argv[1]
 outpath = sys.argv[2]
 
 @dataclass
 class Vector2f:
-    r: float
-    theta: float
+    x: float
+    y: float
 
     @staticmethod
     def zero():
@@ -75,55 +72,21 @@ class Frame:
 
     def to_array(self):
         arr = []
-        if self.duration == 1:
-            arr.append("")
-        else:
-            arr.append(self.duration)
+        arr.append(self.duration)
         for button in self.buttons:
             arr.append(button)
         for i in range(max_buttons - len(self.buttons)):
             arr.append("")
         if (self.left_stick == Vector2f.zero()):
             arr.append("")
-        elif (self.left_stick.r == 1):
-            arr.append("ls(" + str(self.left_stick.theta) + ")")
         else:
-            arr.append("ls(" + str(self.left_stick.r) + "; " + str(self.left_stick.theta) + ")")
+            arr.append("lsx(" + str(self.left_stick.x) + "; " + str(self.left_stick.y) + ")")
         if (self.right_stick == Vector2f.zero()):
             arr.append("")
-        elif (self.right_stick.r == 1):
-            arr.append("rs(" + str(self.right_stick.theta) + ")")
         else:
-            arr.append("rs(" + str(self.right_stick.r) + "; " + str(self.right_stick.theta) + ")")
+            arr.append("rsx(" + str(self.right_stick.x) + "; " + str(self.right_stick.y) + ")")
 
         return arr
-
-def toRoundedPolar(x, y):
-    r = math.sqrt(x * x + y * y) / 32767
-    theta = np.arctan2(y, x) * RAD_TO_DEG
-    if (theta < 0):
-        theta += 360
-
-    r_rounded, theta_rounded = r, theta
-
-    #try to round to simplest terms possible
-    for r_decimalPlaces in range(4):
-        for theta_decimalPlaces in range(5):
-            #print(decimalPlaces)
-            r_rounded_test = round(r, r_decimalPlaces)
-            theta_rounded_test = round(theta, theta_decimalPlaces)
-            #print(r_rounded_test)
-            x_test = int(32767 * r_rounded_test * math.cos(theta_rounded_test * DEG_TO_RAD))
-            y_test = int(32767 * r_rounded_test * math.sin(theta_rounded_test * DEG_TO_RAD))
-            if x_test == x and y_test == y:
-                r_rounded = r_rounded_test
-                if theta_decimalPlaces == 0:
-                    theta_rounded = int(theta_rounded_test)
-                else:
-                    theta_rounded = theta_rounded_test
-                break
-
-    return Vector2f(r_rounded, theta_rounded)
 
 max_buttons = 0 #max buttons in a frame
 
@@ -151,16 +114,16 @@ with open(inpath) as infile:
             elif button == "KEY_B": button_list.append("b")
             elif button == "KEY_X": button_list.append("x")
             elif button == "KEY_Y": button_list.append("y")
-            elif button == "KEY_L": button_list.append("l")
+            elif button == "KEY_L": button_list.append("m")
             elif button == "KEY_R": button_list.append("r")
             elif button == "KEY_ZL": button_list.append("zl")
             elif button == "KEY_ZR": button_list.append("zr")
             elif button == "KEY_PLUS": button_list.append("+")
             elif button == "KEY_MINUS": button_list.append("-")
-            elif button == "KEY_DLEFT": button_list.append("dp-l")
-            elif button == "KEY_DUP": button_list.append("dp-u")
-            elif button == "KEY_DRIGHT": button_list.append("dp-r")
-            elif button == "KEY_DDOWN": button_list.append("dp-d")
+            elif button == "KEY_DLEFT": button_list.append("m-l")
+            elif button == "KEY_DUP": button_list.append("m-u")
+            elif button == "KEY_DRIGHT": button_list.append("m-r")
+            elif button == "KEY_DDOWN": button_list.append("m-d")
             elif button == "KEY_LSTICK": button_list.append("ls")
             elif button == "KEY_RSTICK": button_list.append("rs")
 
@@ -173,12 +136,12 @@ with open(inpath) as infile:
         if ls_x == 0 and ls_y == 0:
             left_stick = Vector2f.zero()
         else:
-            left_stick = toRoundedPolar(ls_x, ls_y)
+            left_stick = Vector2f(ls_x, ls_y)
 
         if rs_x == 0 and rs_y == 0:
             right_stick = Vector2f.zero()
         else:
-            right_stick = toRoundedPolar(rs_x, rs_y)
+            right_stick = Vector2f(rs_x, rs_y)
 
         #accel_left = Vector3f(*map(float, accel_left))
         #accel_right = Vector3f(*map(float, accel_right))

@@ -304,8 +304,8 @@ def addToFrameRange(token, frameRange:range):
                     
                     if "x" in prefix:
                         coords = Vector2f.zero()
-                        coords.x = int(token.split(";")[0])
-                        coords.y = int(token.split(";")[1])
+                        coords.x = int(token.split(";")[0])/32767
+                        coords.y = int(token.split(";")[1])/32767
                     else:
                         coords = getStickCoords(token)
                     
@@ -388,8 +388,8 @@ def addToFrameRange(token, frameRange:range):
 
                     if "x" in prefix:
                         coords = Vector2f.zero()
-                        coords.x = int(token.split(";")[0])
-                        coords.y = int(token.split(";")[1])
+                        coords.x = int(token.split(";")[0])/32767
+                        coords.y = int(token.split(";")[1])/32767
                     else:
                         coords = getStickCoords(token)
                     

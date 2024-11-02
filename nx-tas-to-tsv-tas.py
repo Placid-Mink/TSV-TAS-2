@@ -114,16 +114,16 @@ with open(inpath) as infile:
             elif button == "KEY_B": button_list.append("b")
             elif button == "KEY_X": button_list.append("x")
             elif button == "KEY_Y": button_list.append("y")
-            elif button == "KEY_L": button_list.append("m")
+            elif button == "KEY_L": button_list.append("m-d")
             elif button == "KEY_R": button_list.append("r")
             elif button == "KEY_ZL": button_list.append("zl")
             elif button == "KEY_ZR": button_list.append("zr")
             elif button == "KEY_PLUS": button_list.append("+")
             elif button == "KEY_MINUS": button_list.append("-")
-            elif button == "KEY_DLEFT": button_list.append("m-l")
-            elif button == "KEY_DUP": button_list.append("m-u")
-            elif button == "KEY_DRIGHT": button_list.append("m-r")
-            elif button == "KEY_DDOWN": button_list.append("m-d")
+            elif button == "KEY_DUP": button_list.append("m-uu")
+            elif button == "KEY_DRIGHT": button_list.append("m-rr")
+            elif button == "KEY_DDOWN": button_list.append("m-dd")
+            elif button == "KEY_DLEFT": button_list.append("m-ll")
             elif button == "KEY_LSTICK": button_list.append("ls")
             elif button == "KEY_RSTICK": button_list.append("rs")
 
@@ -157,13 +157,18 @@ with open(inpath) as infile:
 
         numSkipped = frame_idx - frame_idx_old - 1
 
-        #check for skipped empty frames
         if numSkipped > 0:           
             frame = Frame(numSkipped, [], Vector2f.zero(), Vector2f.zero())
             frames.append(frame)
 
         #check for repeated frames
         if len(frames) > 0 and frames[-1].buttons == button_list and frames[-1].left_stick == left_stick and frames[-1].right_stick == right_stick:
+            # Separate D-pad buttons into a new frame if they exist
+            dpad_buttons = [button for button in button_list if button in ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l","m"]]
+            if dpad_buttons:
+                dpad_frame = Frame(1, dpad_buttons, Vector2f.zero(), Vector2f.zero())
+                frames.append(dpad_frame)
+                button_list = [button for button in button_list if button not in dpad_buttons]
             frames[-1].duration += 1
         else:
             frame = Frame(1, button_list, left_stick, right_stick)
@@ -171,11 +176,22 @@ with open(inpath) as infile:
 
         frame_idx_old = frame_idx
 
+for i in range(1, len(frames)):
+    dpad_buttons = [button for button in frames[i].buttons if button in ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l","m"]]
+    if dpad_buttons and frames[i - 1].duration == 1:
+        frames[i].buttons = [button for button in frames[i].buttons if button not in dpad_buttons]
+        frames[i - 1].buttons.extend(dpad_buttons)
+    elif dpad_buttons:
+        frames[i].buttons = [button for button in frames[i].buttons if button not in dpad_buttons]
+        frames[i - 1].duration -= 1
+        new_frame = Frame(1, dpad_buttons + frames[i - 1].buttons, frames[i - 1].left_stick, frames[i - 1].right_stick)
+        frames.insert(i, new_frame)
+        
 infile.close()
 
 outfile = open(outpath, "w")
 
-tsv_writer = csv.writer(outfile, delimiter = '\t')
+tsv_writer = csv.writer(outfile, delimiter = '\t', lineterminator='\n',)
 
 for frame in frames:
     tsv_writer.writerow(frame.to_array())

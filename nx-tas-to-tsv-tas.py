@@ -175,17 +175,19 @@ with open(inpath) as infile:
             frames.append(frame)
 
         frame_idx_old = frame_idx
-
-for i in range(1, len(frames)):
-    dpad_buttons = [button for button in frames[i].buttons if button in ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l","m"]]
+    
+for i in range(len(frames)+1):
+    dpad_buttons = [button for button in frames[i -1].buttons if button in ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l","m"]]
+    # print(dpad_buttons, i)
     if dpad_buttons and frames[i - 1].duration == 1:
         frames[i].buttons = [button for button in frames[i].buttons if button not in dpad_buttons]
         frames[i - 1].buttons.extend(dpad_buttons)
     elif dpad_buttons:
         frames[i].buttons = [button for button in frames[i].buttons if button not in dpad_buttons]
         frames[i - 1].duration -= 1
-        new_frame = Frame(1, dpad_buttons + frames[i - 1].buttons, frames[i - 1].left_stick, frames[i - 1].right_stick)
+        new_frame = Frame(1, dpad_buttons + frames[i-1].buttons, frames[i-1].left_stick, frames[i-1].right_stick)
         frames.insert(i, new_frame)
+ 
         
 infile.close()
 

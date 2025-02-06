@@ -165,25 +165,33 @@ with open(inpath) as infile:
         if len(frames) > 0 and frames[-1].buttons == button_list and frames[-1].left_stick == left_stick and frames[-1].right_stick == right_stick:
             # Separate D-pad buttons into a new frame if they exist
             dpad_buttons = [button for button in button_list if button in ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l","m"]]
+            dp_buttons = ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l","m"]
+            frames[-1].duration += 1
             if dpad_buttons:
                 dpad_frame = Frame(1, dpad_buttons, Vector2f.zero(), Vector2f.zero())
                 frames.append(dpad_frame)
-                button_list = [button for button in button_list if button not in dpad_buttons]
-            frames[-1].duration += 1
+                button_list = [button for button in button_list if button not in dp_buttons]
+            
         else:
             frame = Frame(1, button_list, left_stick, right_stick)
             frames.append(frame)
 
         frame_idx_old = frame_idx
     
-for i in range(len(frames)+1):
-    dpad_buttons = [button for button in frames[i -1].buttons if button in ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l","m"]]
+for i in range(len(frames)):
+    dpad_buttons = [button for button in frames[i].buttons if button in ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l","m"]]
+    dp_buttons = ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l","m"]
     # print(dpad_buttons, i)
-    if dpad_buttons and frames[i - 1].duration == 1:
-        frames[i].buttons = [button for button in frames[i].buttons if button not in dpad_buttons]
-        frames[i - 1].buttons.extend(dpad_buttons)
+    if dpad_buttons and frames[i].duration == 1:
+        frames[i].buttons = [button for button in frames[i].buttons if button not in dp_buttons]
+        if frames[i-1].duration > 1:
+            frames[i-1].duration -= 1
+            f = Frame(1, dpad_buttons, Vector2f.zero(), Vector2f.zero())
+            frames.insert(i, f)
+        else:
+            frames[i - 1].buttons.extend(dpad_buttons)
     elif dpad_buttons:
-        frames[i].buttons = [button for button in frames[i].buttons if button not in dpad_buttons]
+        frames[i].buttons = [button for button in frames[i].buttons if button not in dp_buttons]
         frames[i - 1].duration -= 1
         new_frame = Frame(1, dpad_buttons + frames[i-1].buttons, frames[i-1].left_stick, frames[i-1].right_stick)
         frames.insert(i, new_frame)

@@ -186,15 +186,10 @@ for i in range(len(frames)):
         frames[i].buttons = [button for button in frames[i].buttons if button not in dp_buttons]
         if frames[i-1].duration > 1:
             frames[i-1].duration -= 1
-            f = Frame(1, dpad_buttons, Vector2f.zero(), Vector2f.zero())
+            f = Frame(1, dpad_buttons + frames[i-1].buttons, frames[i-1].left_stick, frames[i-1].right_stick)
             frames.insert(i, f)
         else:
             frames[i - 1].buttons.extend(dpad_buttons)
-    elif dpad_buttons:
-        frames[i].buttons = [button for button in frames[i].buttons if button not in dp_buttons]
-        frames[i - 1].duration -= 1
-        new_frame = Frame(1, dpad_buttons + frames[i-1].buttons, frames[i-1].left_stick, frames[i-1].right_stick)
-        frames.insert(i, new_frame)
  
         
 infile.close()

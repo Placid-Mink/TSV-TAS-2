@@ -178,19 +178,19 @@ with open(inpath) as infile:
 
         frame_idx_old = frame_idx
     
-for i in range(len(frames)):
-    dpad_buttons = [button for button in frames[i].buttons if button in ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l","m"]]
-    dp_buttons = ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l","m"]
-    # print(dpad_buttons, i)
-    if dpad_buttons and frames[i].duration == 1:
-        frames[i].buttons = [button for button in frames[i].buttons if button not in dp_buttons]
-        if frames[i-1].duration > 1:
-            frames[i-1].duration -= 1
-            f = Frame(1, dpad_buttons + frames[i-1].buttons, frames[i-1].left_stick, frames[i-1].right_stick)
-            frames.insert(i, f)
-        else:
-            frames[i - 1].buttons.extend(dpad_buttons)
- 
+    i = 0
+    while i < len(frames):
+        dpad_buttons = [button for button in frames[i].buttons if button in ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l", "m"]]
+        dp_buttons = ["m-ll", "m-uu", "m-rr", "m-dd", "m-d", "m-u", "m-r", "m-l", "m"]
+        if dpad_buttons and frames[i].duration == 1:
+            frames[i].buttons = [button for button in frames[i].buttons if button not in dp_buttons]
+            if frames[i - 1].duration > 1:
+                frames[i - 1].duration -= 1
+                frames.insert(i, Frame(1, dpad_buttons + frames[i - 1].buttons, frames[i - 1].left_stick, frames[i - 1].right_stick))
+                i += 1  # Skip the newly inserted frame
+            else:
+                frames[i - 1].buttons.extend(dpad_buttons)
+        i += 1
         
 infile.close()
 

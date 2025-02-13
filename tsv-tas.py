@@ -479,12 +479,12 @@ def addInterpolatedStick(token, frameRange:range):
         r, theta = r1, theta1
 
         for i in range(frameRange.start, frameRange.stop - 1):
-            if right:script.frames[i].right_stick = getStickCoordsFromPolar(r, theta)
-            else:script.frames[i].left_stick = getStickCoordsFromPolar(r, theta)
+            if right:script.frames[2*i].right_stick = getStickCoordsFromPolar(r, theta)
+            else:script.frames[2*i].left_stick = getStickCoordsFromPolar(r, theta)
             r += dr
             theta += dtheta
-        if right:script.frames[frameRange.stop - 1].right_stick = getStickCoordsFromPolar(r2, theta2)
-        else:script.frames[frameRange.stop - 1].left_stick = getStickCoordsFromPolar(r2, theta2)
+        if right:script.frames[(frameRange.stop - 1)*2].right_stick = getStickCoordsFromPolar(r2, theta2)
+        else:script.frames[(frameRange.stop - 1)*2].left_stick = getStickCoordsFromPolar(r2, theta2)
     except:
         print("Syntax error(s) on line " + str(lineInNumber) + " prevented script generation")
         quit(-1)
